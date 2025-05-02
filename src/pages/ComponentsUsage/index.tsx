@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import InputField from "../../components/ui/InputField";
 import CardField from "../../components/ui/CardField";
+import ButtonField from "../../components/ui/ButtonField";
 
 const arr = [
   {
@@ -31,9 +32,10 @@ const arr = [
 
 function ComponentsUsage() {
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const buttonRef = useRef<HTMLButtonElement>(null);
   return (
     <div className="p-16">
+      <ButtonField title="Botãozinho" ref={buttonRef} />
       <CardField
         title="Titulinho"
         content="Conteudo pra caralho taligado mermão?"
