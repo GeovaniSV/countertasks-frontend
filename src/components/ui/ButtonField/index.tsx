@@ -9,7 +9,7 @@ type ButtonProps = {
 function ButtonField({ title, className, ref, ...rest }: ButtonProps) {
   return (
     <div className={`${className}`}>
-      <button {...rest} className="p-2 w-full bg-yellowCS rounded-md">
+      <button {...rest} ref={ref} className="p-2 w-full bg-yellowCS rounded-md">
         {title}
       </button>
     </div>
