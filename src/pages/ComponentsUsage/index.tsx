@@ -42,7 +42,7 @@ function ComponentsUsage() {
 		setActive(!active)
 	}
 	return (
-		<div className="p-16">
+		<div className="p-16 w-[79%] ml-[20%]">
 			<ButtonField
 				title="Botãozinho"
 				ref={buttonRef}
