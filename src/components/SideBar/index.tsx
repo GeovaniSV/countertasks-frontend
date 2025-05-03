@@ -1,5 +1,12 @@
 import { useRef, useState } from 'react'
+import "./Sidebar.css"
+
+
+//components
 import SideBarButton from '../ui/SideBarButton'
+
+//images
+import TRw from "../../assets/agents/TRw.png"
 
 import {
 	HomeIcon,
@@ -40,7 +47,7 @@ function SideBar() {
 		})
 	}
 	return (
-		<main className="fixed h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between">
+		<main className="fixed h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
 			<div>
 				<div className="flex flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
 					<span className="font-bold text-5xl mx-auto">Counter</span>
@@ -48,14 +55,14 @@ function SideBar() {
 				</div>
 
 				<div className="p-2 mx-auto w-64 mt-10">
-					<ul className="flex flex-col gap-5">
+					<ul className="flex flex-col gap-2">
 						<li>
 							<SideBarButton
 								ref={buttonRef}
 								title="INÍCIO"
 								onClick={handleHomeButton}
 								className={`${active.home ? 'bg-amber-200' : ''}`}>
-								<HomeIcon className="size-10" />
+								<HomeIcon className="size-8" />
 							</SideBarButton>
 						</li>
 
@@ -65,7 +72,7 @@ function SideBar() {
 								title="HISTÓRICO"
 								onClick={handleHistoryButton}
 								className={`${active.history ? 'bg-amber-200' : ''}`}>
-								<RectangleStackIcon className="size-10" />
+								<RectangleStackIcon className="size-8" />
 							</SideBarButton>
 						</li>
 
@@ -75,22 +82,28 @@ function SideBar() {
 								title="PERFIL"
 								onClick={handleProfileButton}
 								className={`${active.profile ? 'bg-amber-200' : ''}`}>
-								<UserIcon className="size-10" />
+								<UserIcon className="size-8" />
 							</SideBarButton>
 						</li>
 					</ul>
 				</div>
 			</div>
+			
 
-			<div className="border-t border-gray-300 shadow-inner">
+		<div>
+		<div className='img'>{/*This div is only in css, dont have in tailwind, just for the sidebar image!*/}
+				
+			</div>
+		<div className="border-t border-gray-300 shadow-inner">
 				<div className="p-2 mx-auto w-64">
 					<SideBarButton
 						ref={buttonRef}
 						title="SAIR">
-						<ArrowLeftStartOnRectangleIcon className="size-10" />
+						<ArrowLeftStartOnRectangleIcon className="size-8" />
 					</SideBarButton>
 				</div>
 			</div>
+		</div>
 		</main>
 	)
 }

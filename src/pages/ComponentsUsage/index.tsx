@@ -57,10 +57,46 @@ function ComponentsUsage() {
 			<SideBarButton
 				ref={buttonRef}
 				title="PERFIL"
-				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto`}
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
 				onClick={handlebutton}>
 				<HomeIcon className="size-8" />
 			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			
 		</div>
 	)
 }
