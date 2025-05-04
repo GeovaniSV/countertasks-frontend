@@ -1,15 +1,104 @@
-import { useRef } from "react";
-import InputField from "../../components/ui/InputField";
-import CardField from "../../components/ui/CardField";
+import { useRef, useState } from 'react'
+import InputField from '../../components/ui/InputField'
+import CardField from '../../components/ui/CardField'
+import ButtonField from '../../components/ui/ButtonField'
+import SideBarButton from '../../components/ui/SideBarButton'
+
+import { HomeIcon } from '@heroicons/react/24/outline'
+
+const arr = [
+	{
+		id: 1,
+		content: 'alguma',
+		done: false,
+		cardId: 6,
+	},
+	{
+		id: 2,
+		content: 'coisinha',
+		done: false,
+		cardId: 6,
+	},
+	{
+		id: 3,
+		content: 'taskinho',
+		done: false,
+		cardId: 6,
+	},
+	{
+		id: 4,
+		content: 'La taska',
+		done: false,
+		cardId: 6,
+	},
+]
 
 function ComponentsUsage() {
-  const inputRef = useRef<HTMLInputElement>(null);
+	const [active, setActive] = useState(false)
+	const inputRef = useRef<HTMLInputElement>(null)
+	const buttonRef = useRef<HTMLButtonElement>(null)
 
-  return (
-    <div className="p-16">
-      <CardField />
-    </div>
-  );
+	const handlebutton = () => {
+		setActive(!active)
+	}
+	return (
+		<div className="p-16 w-[79%] ml-[20%]">
+			<ButtonField
+				title="Botãozinho"
+				ref={buttonRef}
+			/>
+			<CardField
+				title="Titulinho"
+				content="Conteudo pra caralho taligado mermão?"
+				subtitle="Subititulinho"
+				tasks={arr}
+			/>
+
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			<SideBarButton
+				ref={buttonRef}
+				title="PERFIL"
+				className={`${active ? 'bg-amber-200' : ''} w-32 mx-auto mt-5`}
+				onClick={handlebutton}>
+				<HomeIcon className="size-8" />
+			</SideBarButton>
+			
+		</div>
+	)
 }
 
-export default ComponentsUsage;
+export default ComponentsUsage
