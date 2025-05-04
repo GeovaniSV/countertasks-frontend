@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react'
-import "./Sidebar.css"
-
+import './Sidebar.css'
 
 //components
 import SideBarButton from '../ui/SideBarButton'
 
 //images
-import TRw from "../../assets/agents/TRw.png"
 
 import {
 	HomeIcon,
@@ -47,7 +45,7 @@ function SideBar() {
 		})
 	}
 	return (
-		<main className="fixed h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
+		<main className="h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
 			<div>
 				<div className="flex flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
 					<span className="font-bold text-5xl mx-auto">Counter</span>
@@ -88,22 +86,18 @@ function SideBar() {
 					</ul>
 				</div>
 			</div>
-			
 
-		<div>
-		<div className='img'>{/*This div is only in css, dont have in tailwind, just for the sidebar image!*/}
-				
-			</div>
-		<div className="border-t border-gray-300 shadow-inner">
-				<div className="p-2 mx-auto w-64">
-					<SideBarButton
-						ref={buttonRef}
-						title="SAIR">
-						<ArrowLeftStartOnRectangleIcon className="size-8" />
-					</SideBarButton>
+			<div>
+				<div className="border-t border-gray-300 shadow-inner">
+					<div className="p-2 mx-auto w-64">
+						<SideBarButton
+							ref={buttonRef}
+							title="SAIR">
+							<ArrowLeftStartOnRectangleIcon className="size-8" />
+						</SideBarButton>
+					</div>
 				</div>
 			</div>
-		</div>
 		</main>
 	)
 }
