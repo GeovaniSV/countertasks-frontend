@@ -1,14 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ComponentsUsage from "./pages/ComponentsUsage";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import ComponentsUsage from './pages/ComponentsUsage'
+import SideBar from './components/SideBar'
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ComponentsUsage />} />
-      </Routes>
-    </BrowserRouter>
-  );
+	return (
+		<div>
+			<SideBar />
+			<BrowserRouter>
+				<Routes>
+					<Route
+						path="/"
+						element={<ComponentsUsage />}
+					/>
+				</Routes>
+			</BrowserRouter>
+		</div>
+	)
 }
 
-export default App;
+export default App
