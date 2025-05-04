@@ -1,8 +1,1 @@
-@import "tailwindcss";
-
-@theme {
-    --color-blueCS: #0257b5;
-    --color-blueCSHover: #283b7e;
-    --color-yellowCS: #fdab1a;
-    --color-orangeCS: #e9851f;
-  }
+@import "tailwindcss"
