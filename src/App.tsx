@@ -5,7 +5,7 @@ import ComponentsUsage from './pages/ComponentsUsage'
 
 function App() {
 	return (
-		<div>
+		<div className="flex">
 			<SideBar />
 			<BrowserRouter>
 				<Routes>
