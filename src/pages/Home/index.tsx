@@ -1,7 +1,11 @@
+import { useRef } from 'react'
+import SearchInputField from '../../components/ui/SearchInpuField'
+
 //icons
 import { PlusIcon } from '@heroicons/react/24/outline'
 
 function Home() {
+	const inputRef = useRef<HTMLInputElement>(null)
 	return (
 		<main className="w-full py-8 px-15">
 			<div>
@@ -19,10 +23,10 @@ function Home() {
 						<span>seção 1</span>
 					</div>
 					<div className="border-t py-5">
-						<input
-							type="text"
-							className="w-56 rounded-md p-1 bg-gray-300"
-							placeholder="Pesquise"
+						<SearchInputField
+							ref={inputRef}
+							className="w-56"
+							placeholder="Pesquisar card"
 						/>
 					</div>
 				</div>
