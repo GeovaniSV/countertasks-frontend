@@ -17,7 +17,7 @@ function SideBarButton({
 		<button
 			{...rest}
 			ref={ref}
-			className={`${className} rounded-md flex p-2 gap-2 items-center justify-center font-bold text-xl cursor-pointer hover:bg-amber-200`}>
+			className={`${className} rounded-md flex p-2 w-full gap-2 items-center font-bold text-lg cursor-pointer hover:bg-amber-200`}>
 			<div>{children}</div>
 			{title}
 		</button>
