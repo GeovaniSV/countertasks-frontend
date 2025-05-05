@@ -7,7 +7,7 @@ type InputProps = {
 	ref: React.Ref<HTMLInputElement>
 } & InputHTMLAttributes<HTMLInputElement>
 
-function SearchInputField({ label, ref, className, ...rest }: InputProps) {
+function SearchBar({ label, ref, className, ...rest }: InputProps) {
 	return (
 		<div className={` ${className}`}>
 			<label className="flex flex-col">
@@ -28,4 +28,4 @@ function SearchInputField({ label, ref, className, ...rest }: InputProps) {
 	)
 }
 
-export default SearchInputField
+export default SearchBar
