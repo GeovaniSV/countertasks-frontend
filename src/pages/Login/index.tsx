@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { api } from '../../services/api'
 import './Login.css'
 
@@ -80,12 +80,12 @@ function Login() {
 				</div>
 
 				<div className="mt-5">
-					<button
-						onClick={() => (window.location.href = '/register')}
+					<Link
+						to="/register"
 						className="text-blueCS font-bold cursor-pointer hover:text-blue-500">
 						Ainda não tem uma conta?{' '}
 						<span className="underline">Cadastre-se</span>
-					</button>
+					</Link>
 				</div>
 			</div>
 		</main>
