@@ -9,7 +9,13 @@ const arr = [
 	{
 		id: 1,
 		content: 'alguma',
-		done: false,
+		done: true,
+		cardId: 6,
+	},
+	{
+		id: 1,
+		content: 'alguma',
+		done: true,
 		cardId: 6,
 	},
 ]
@@ -17,7 +23,7 @@ const arr = [
 function Home() {
 	const inputRef = useRef<HTMLInputElement>(null)
 	return (
-		<main className="w-full py-6 px-15">
+		<main className="w-full py-4 px-8 ">
 			<div>
 				<div className="flex justify-between">
 					<span className="font-medium text-4xl">Tasks</span>
@@ -32,7 +38,7 @@ function Home() {
 						<span>Todos</span>
 						<span>seção 1</span>
 					</div>
-					<div className="border-t py-5">
+					<div className="border-t py-3">
 						<SearchBar
 							ref={inputRef}
 							className="w-72"
