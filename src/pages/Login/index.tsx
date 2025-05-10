@@ -33,7 +33,7 @@ function Login() {
 	const handleKeySubmit = (e: React.KeyboardEvent) => {
 		const { code } = e
 
-		if (code === 'Enter') {
+		if (['Enter', 'NumpadEnter'].includes(code)) {
 			handleSubmit()
 		}
 	}
