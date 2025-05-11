@@ -1,108 +1,287 @@
-import { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SearchBar from '../../components/ui/SearchBarField'
 import CardField from '../../components/ui/CardField'
+import InputField from '../../components/ui/InputField'
+import Modal from '../../components/Modal'
+
+//Api
+import { api } from '../../services/api'
 
 //icons
-import { PlusIcon } from '@heroicons/react/24/outline'
+import {
+	PlusIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	ChevronDoubleLeftIcon,
+	ChevronDoubleRightIcon,
+} from '@heroicons/react/24/outline'
 
-const arr = [
-	{
-		id: 1,
-		content: 'alguma',
-		done: true,
-		cardId: 6,
-	},
-	{
-		id: 1,
-		content: 'alguma',
-		done: true,
-		cardId: 6,
-	},
-]
+type usersProps = {
+	id: number
+	email: string
+	name: string
+	cards: []
+}
+
+type cardsProps = {
+	id: number
+	title: string
+	subtitle: string
+	content: string
+	done: boolean
+	tasks: []
+	authorId: number
+}
+
+type taskProps = {
+	content: string
+}
 
 function Home() {
-	const inputRef = useRef<HTMLInputElement>(null)
+	const [inputValues, setInputValues] = useState({
+		title: '',
+		subTitle: '',
+		content: '',
+		task: '',
+	})
+	const [tasks, setTasks] = useState<taskProps[]>([])
+	const [users, setUsers] = useState<usersProps[]>([])
+	const [cards, setCards] = useState<cardsProps[]>([])
+	const [openModal, setOpenModal] = useState(false)
+	const taskInputRef = useRef<HTMLInputElement>(null)
+
+	//pagination
+	const [currentPage, setCurrentPage] = useState(1)
+	const [perPage, setPerPage] = useState(9)
+	const pagination = {
+		totalPage: Math.ceil(cards.length / perPage),
+	}
+	const lastIndex = currentPage * perPage
+	const firstIndex = lastIndex - perPage
+	const cardsPagination = cards.slice(firstIndex, lastIndex)
+	const totalItems = cards.length
+
+	const paginationControl = {
+		next() {
+			setCurrentPage(currentPage + 1)
+			const lastPage = currentPage > pagination.totalPage
+			if (lastPage) {
+				setCurrentPage(currentPage - 1)
+			}
+		},
+		prev() {
+			setCurrentPage(currentPage - 1)
+			const firstPage = currentPage < 1
+			if (firstPage) {
+				setCurrentPage(currentPage + 1)
+			}
+		},
+		last() {
+			setCurrentPage(pagination.totalPage)
+		},
+		first() {
+			setCurrentPage(1)
+		},
+	}
+
+	const taskSubmit = () => {
+		const task = {
+			content: '',
+		}
+		if (inputValues.task) {
+			task.content = inputValues.task
+		}
+
+		if (task.content) {
+			tasks.push(task)
+		}
+
+		setInputValues({ ...inputValues, task: '' })
+		taskInputRef.current?.focus()
+	}
+
+	const keyEvent = (e: React.KeyboardEvent) => {
+		const { code } = e
+
+		if (['Enter', 'NumpadEnter'].includes(code)) {
+			taskSubmit()
+		}
+	}
+
+	const getUser = async () => {
+		const token = localStorage.getItem('token')
+		try {
+			const user = await api.get('/user', {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			setUsers(user.data)
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
+	const getCards = async () => {
+		const token = localStorage.getItem('token')
+		try {
+			const card = await api.get('/cards', {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			if (!card.data.cards) {
+				return
+			} else {
+				setCards(card.data.cards)
+			}
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
+	const modalSubmit = async () => {
+		const token = localStorage.getItem('token')
+		const authorId = localStorage.getItem('userId')
+		try {
+			api.post(
+				'/cards',
+				{
+					title: inputValues.title,
+					subtitle: inputValues.subTitle,
+					content: inputValues.content,
+					authorId: authorId,
+					tasks: tasks,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+		} catch (e) {
+			console.log(e)
+		}
+		getCards()
+	}
+
+	useEffect(() => {
+		getUser()
+		const email = localStorage.getItem('email')
+		users.map((user) => {
+			if (user.email === email) {
+				localStorage.setItem('userId', user.id.toFixed())
+			}
+		})
+		getCards()
+	}, [])
+
 	return (
-		<main className="w-full py-4 px-8 ">
+		<main className="w-full py-4 px-8">
+			<Modal
+				isOpen={openModal}
+				setModalOpen={() => setOpenModal(false)}
+				createCard={modalSubmit}>
+				<span className="font-bold text-2xl">Crie seu card!</span>
+				<form className="w-full flex flex-col gap-2">
+					<InputField
+						label="Titulo"
+						placeholder="Digite o titulo aqui"
+						value={inputValues.title}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, title: e.target.value })
+						}
+					/>
+					<InputField
+						label="Subtitulo"
+						placeholder="Digite o subtitulo aqui!"
+						value={inputValues.subTitle}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, subTitle: e.target.value })
+						}
+					/>
+					<div>
+						<label htmlFor="content">Conteúdo</label>
+						<textarea
+							name="content"
+							id="content"
+							className="w-full bg-gray-300 border-b-2 outline-none rounded-sm p-1.5"
+							placeholder="Digite um resumo do card"
+							value={inputValues.content}
+							onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+								setInputValues({ ...inputValues, content: e.target.value })
+							}></textarea>
+					</div>
+
+					<InputField
+						label="Tasks"
+						ref={taskInputRef}
+						placeholder="coloque uma Task por vez! Utilize 'Enter'"
+						value={inputValues.task}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, task: e.target.value })
+						}
+						onKeyDown={(e: React.KeyboardEvent) => keyEvent(e)}
+					/>
+				</form>
+			</Modal>
 			<div>
 				<div className="flex justify-between">
 					<span className="font-medium text-4xl">Tasks</span>
-					<button className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1">
+					<button
+						className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1"
+						onClick={() => setOpenModal(true)}>
 						<PlusIcon className="size-5" />
 						<span>CRIAR UM NOVO CARD</span>
 					</button>
 				</div>
 
 				<div className="mt-4">
-					<div className="flex gap-5 font-bold text-lg">
-						<span>Todos</span>
-						<span>seção 1</span>
-					</div>
-					<div className="border-t py-3">
-						<SearchBar
-							ref={inputRef}
-							className="w-72"
-							placeholder="Pesquisar card"
-						/>
+					<SearchBar
+						className="w-72"
+						placeholder="Pesquisar card"
+					/>
+
+					<div className="flex gap-5 border-t mt-2 p-1">
+						<button
+							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.first}
+							disabled={currentPage === 1}>
+							<ChevronDoubleLeftIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.prev}
+							disabled={currentPage === 1}>
+							<ChevronLeftIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.next}
+							disabled={currentPage === pagination.totalPage}>
+							<ChevronRightIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.last}
+							disabled={currentPage === pagination.totalPage}>
+							<ChevronDoubleRightIcon className="size-5 text-gray-500" />
+						</button>
+						<div className="flex items-center gap-5 justify-between w-full text-gray-500">
+							<span>
+								Pagina atual {currentPage} de {pagination.totalPage}
+							</span>
+							<span>Total de {totalItems} items</span>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div className="grid grid-cols-3 gap-3">
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
-				<CardField
-					title="Card1"
-					subtitle="Cardinho"
-					content="Resumo, até demais"
-					tasks={arr}
-				/>
+				{cardsPagination.map((card) => (
+					<button
+						className="cursor-pointer hover:bg-gray-100 rounded-lg"
+						key={card.id}>
+						<CardField
+							title={card.title}
+							subtitle={card.subtitle}
+							content={card.content}
+							tasks={card.tasks}
+						/>
+					</button>
+				))}
 			</div>
 		</main>
 	)
