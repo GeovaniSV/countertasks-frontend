@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-
+import { useNavigate } from 'react-router-dom'
 //components
 import SideBarButton from '../ui/SideBarButton'
 
@@ -13,6 +13,7 @@ import {
 } from '@heroicons/react/24/outline'
 
 function SideBar() {
+	const navigate = useNavigate()
 	const [active, setAcitve] = useState({
 		home: false,
 		history: false,
@@ -42,6 +43,14 @@ function SideBar() {
 			history: false,
 			profile: true,
 		})
+	}
+
+	const handleLogout = () => {
+		localStorage.removeItem('token')
+		localStorage.removeItem('email')
+		localStorage.removeItem('userId')
+		localStorage.removeItem('name')
+		navigate('/login')
 	}
 	return (
 		<main className="h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
@@ -91,7 +100,8 @@ function SideBar() {
 					<div className="p-2 mx-auto w-64">
 						<SideBarButton
 							ref={buttonRef}
-							title="SAIR">
+							title="SAIR"
+							onClick={handleLogout}>
 							<ArrowLeftStartOnRectangleIcon className="size-8" />
 						</SideBarButton>
 					</div>
