@@ -58,7 +58,8 @@ function Home() {
 	}
 	const lastIndex = currentPage * perPage
 	const firstIndex = lastIndex - perPage
-	const cardsPagination = cards.slice(firstIndex, lastIndex)
+	const cardsReversed = cards.slice(0).reverse()
+	const cardsPagination = cardsReversed.slice(firstIndex, lastIndex)
 	const totalItems = cards.length
 
 	const paginationControl = {
@@ -108,18 +109,6 @@ function Home() {
 		}
 	}
 
-	const getUser = async () => {
-		const token = localStorage.getItem('token')
-		try {
-			const user = await api.get('/user', {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			setUsers(user.data)
-		} catch (e) {
-			console.log(e)
-		}
-	}
-
 	const getCards = async () => {
 		const token = localStorage.getItem('token')
 		try {
@@ -151,6 +140,20 @@ function Home() {
 				},
 				{ headers: { Authorization: `Bearer ${token}` } },
 			)
+			setOpenModal(false)
+			getCards()
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
+	const handleCard = async (id: number) => {
+		const token = localStorage.getItem('token')
+		const authorId = localStorage.getItem('userId')
+		try {
+			await api.delete(`/cards/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
 		} catch (e) {
 			console.log(e)
 		}
@@ -158,15 +161,8 @@ function Home() {
 	}
 
 	useEffect(() => {
-		getUser()
-		const email = localStorage.getItem('email')
-		users.map((user) => {
-			if (user.email === email) {
-				localStorage.setItem('userId', user.id.toFixed())
-			}
-		})
 		getCards()
-	}, [])
+	}, [openModal])
 
 	return (
 		<main className="w-full py-4 px-8">
@@ -235,30 +231,34 @@ function Home() {
 					/>
 
 					<div className="flex gap-5 border-t mt-2 p-1">
-						<button
-							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
-							onClick={paginationControl.first}
-							disabled={currentPage === 1}>
-							<ChevronDoubleLeftIcon className="size-5 text-gray-500" />
-						</button>
-						<button
-							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
-							onClick={paginationControl.prev}
-							disabled={currentPage === 1}>
-							<ChevronLeftIcon className="size-5 text-gray-500" />
-						</button>
-						<button
-							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
-							onClick={paginationControl.next}
-							disabled={currentPage === pagination.totalPage}>
-							<ChevronRightIcon className="size-5 text-gray-500" />
-						</button>
-						<button
-							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
-							onClick={paginationControl.last}
-							disabled={currentPage === pagination.totalPage}>
-							<ChevronDoubleRightIcon className="size-5 text-gray-500" />
-						</button>
+						{cards.length >= 10 && (
+							<>
+								<button
+									className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+									onClick={paginationControl.first}
+									disabled={currentPage === 1}>
+									<ChevronDoubleLeftIcon className="size-5 text-gray-500" />
+								</button>
+								<button
+									className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+									onClick={paginationControl.prev}
+									disabled={currentPage === 1}>
+									<ChevronLeftIcon className="size-5 text-gray-500" />
+								</button>
+								<button
+									className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+									onClick={paginationControl.next}
+									disabled={currentPage === pagination.totalPage}>
+									<ChevronRightIcon className="size-5 text-gray-500" />
+								</button>
+								<button
+									className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+									onClick={paginationControl.last}
+									disabled={currentPage === pagination.totalPage}>
+									<ChevronDoubleRightIcon className="size-5 text-gray-500" />
+								</button>
+							</>
+						)}
 						<div className="flex items-center gap-5 justify-between w-full text-gray-500">
 							<span>
 								Pagina atual {currentPage} de {pagination.totalPage}
@@ -273,6 +273,7 @@ function Home() {
 				{cardsPagination.map((card) => (
 					<button
 						className="cursor-pointer hover:bg-gray-100 rounded-lg"
+						onClick={() => handleCard(card.id)}
 						key={card.id}>
 						<CardField
 							title={card.title}
@@ -280,6 +281,7 @@ function Home() {
 							content={card.content}
 							tasks={card.tasks}
 						/>
+						<p>{card.id}</p>
 					</button>
 				))}
 			</div>
