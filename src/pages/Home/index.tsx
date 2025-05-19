@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import SearchBar from '../../components/ui/SearchBarField'
 import CardField from '../../components/ui/CardField'
-import InputField from '../../components/ui/InputField'
-import Modal from '../../components/Modal'
+import Modal from '../../components/CreateCardModal'
 
 //Api
 import { api } from '../../services/api'
@@ -15,13 +14,7 @@ import {
 	ChevronDoubleLeftIcon,
 	ChevronDoubleRightIcon,
 } from '@heroicons/react/24/outline'
-
-type usersProps = {
-	id: number
-	email: string
-	name: string
-	cards: []
-}
+import { Link } from 'react-router-dom'
 
 type cardsProps = {
 	id: number
@@ -33,22 +26,9 @@ type cardsProps = {
 	authorId: number
 }
 
-type taskProps = {
-	content: string
-}
-
 function Home() {
-	const [inputValues, setInputValues] = useState({
-		title: '',
-		subTitle: '',
-		content: '',
-		task: '',
-	})
-	const [tasks, setTasks] = useState<taskProps[]>([])
-	const [users, setUsers] = useState<usersProps[]>([])
 	const [cards, setCards] = useState<cardsProps[]>([])
-	const [openModal, setOpenModal] = useState(false)
-	const taskInputRef = useRef<HTMLInputElement>(null)
+	const [openCreateModal, setOpenCreateModal] = useState(false)
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
@@ -85,140 +65,41 @@ function Home() {
 		},
 	}
 
-	const taskSubmit = () => {
-		const task = {
-			content: '',
-		}
-		if (inputValues.task) {
-			task.content = inputValues.task
-		}
-
-		if (task.content) {
-			tasks.push(task)
-		}
-
-		setInputValues({ ...inputValues, task: '' })
-		taskInputRef.current?.focus()
-	}
-
-	const keyEvent = (e: React.KeyboardEvent) => {
-		const { code } = e
-
-		if (['Enter', 'NumpadEnter'].includes(code)) {
-			taskSubmit()
-		}
-	}
-
-	const getCards = async () => {
+	async function getCards() {
 		const token = localStorage.getItem('token')
 		try {
-			const card = await api.get('/cards', {
+			const { data } = await api.get('/cards', {
 				headers: { Authorization: `Bearer ${token}` },
 			})
-			if (!card.data.cards) {
+			if (!data) {
 				return
 			} else {
-				setCards(card.data.cards)
+				setCards(data)
 			}
-		} catch (e) {
-			console.log(e)
-		}
-	}
 
-	const modalSubmit = async () => {
-		const token = localStorage.getItem('token')
-		const authorId = localStorage.getItem('userId')
-		try {
-			api.post(
-				'/cards',
-				{
-					title: inputValues.title,
-					subtitle: inputValues.subTitle,
-					content: inputValues.content,
-					authorId: authorId,
-					tasks: tasks,
-				},
-				{ headers: { Authorization: `Bearer ${token}` } },
-			)
-			setOpenModal(false)
-			getCards()
+			console.log(data)
 		} catch (e) {
 			console.log(e)
 		}
-	}
-
-	const handleCard = async (id: number) => {
-		const token = localStorage.getItem('token')
-		const authorId = localStorage.getItem('userId')
-		try {
-			await api.delete(`/cards/${id}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-		} catch (e) {
-			console.log(e)
-		}
-		getCards()
 	}
 
 	useEffect(() => {
 		getCards()
-	}, [openModal])
+	}, [openCreateModal])
 
 	return (
-		<main className="w-full py-4 px-8">
+		<main className="w-full py-4 px-8 max-sm:px-2">
 			<Modal
-				isOpen={openModal}
-				setModalOpen={() => setOpenModal(false)}
-				createCard={modalSubmit}>
-				<span className="font-bold text-2xl">Crie seu card!</span>
-				<form className="w-full flex flex-col gap-2">
-					<InputField
-						label="Titulo"
-						placeholder="Digite o titulo aqui"
-						value={inputValues.title}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setInputValues({ ...inputValues, title: e.target.value })
-						}
-					/>
-					<InputField
-						label="Subtitulo"
-						placeholder="Digite o subtitulo aqui!"
-						value={inputValues.subTitle}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setInputValues({ ...inputValues, subTitle: e.target.value })
-						}
-					/>
-					<div>
-						<label htmlFor="content">Conteúdo</label>
-						<textarea
-							name="content"
-							id="content"
-							className="w-full bg-gray-300 border-b-2 outline-none rounded-sm p-1.5"
-							placeholder="Digite um resumo do card"
-							value={inputValues.content}
-							onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-								setInputValues({ ...inputValues, content: e.target.value })
-							}></textarea>
-					</div>
+				isOpen={openCreateModal}
+				setModalOpen={() => setOpenCreateModal(false)}
+			/>
 
-					<InputField
-						label="Tasks"
-						ref={taskInputRef}
-						placeholder="coloque uma Task por vez! Utilize 'Enter'"
-						value={inputValues.task}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setInputValues({ ...inputValues, task: e.target.value })
-						}
-						onKeyDown={(e: React.KeyboardEvent) => keyEvent(e)}
-					/>
-				</form>
-			</Modal>
 			<div>
 				<div className="flex justify-between">
-					<span className="font-medium text-4xl">Tasks</span>
+					<span className="font-medium text-4xl">Cards</span>
 					<button
 						className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1"
-						onClick={() => setOpenModal(true)}>
+						onClick={() => setOpenCreateModal(true)}>
 						<PlusIcon className="size-5" />
 						<span>CRIAR UM NOVO CARD</span>
 					</button>
@@ -226,11 +107,11 @@ function Home() {
 
 				<div className="mt-4">
 					<SearchBar
-						className="w-72"
+						className="w-72 max-md:hidden"
 						placeholder="Pesquisar card"
 					/>
 
-					<div className="flex gap-5 border-t mt-2 p-1">
+					<div className="flex gap-5 border-t mt-2 p-1 max-md:hidden">
 						{cards.length >= 10 && (
 							<>
 								<button
@@ -261,7 +142,8 @@ function Home() {
 						)}
 						<div className="flex items-center gap-5 justify-between w-full text-gray-500">
 							<span>
-								Pagina atual {currentPage} de {pagination.totalPage}
+								Pagina atual {cards.length ? currentPage : '0'} de{' '}
+								{pagination.totalPage}
 							</span>
 							<span>Total de {totalItems} items</span>
 						</div>
@@ -269,11 +151,11 @@ function Home() {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-3 gap-3">
+			<div className="grid grid-cols-3 gap-3 max-md:hidden">
 				{cardsPagination.map((card) => (
-					<button
+					<Link
 						className="cursor-pointer hover:bg-gray-100 rounded-lg"
-						onClick={() => handleCard(card.id)}
+						to={`/card/${card.id}`}
 						key={card.id}>
 						<CardField
 							title={card.title}
@@ -281,8 +163,23 @@ function Home() {
 							content={card.content}
 							tasks={card.tasks}
 						/>
-						<p>{card.id}</p>
-					</button>
+					</Link>
+				))}
+			</div>
+
+			<div className="flex flex-col gap-5 md:hidden overflow-auto max-h-screen">
+				{cardsReversed.map((card) => (
+					<Link
+						className="cursor-pointer hover:bg-gray-100 rounded-lg"
+						to={`/card/${card.id}`}
+						key={card.id}>
+						<CardField
+							title={card.title}
+							subtitle={card.subtitle}
+							content={card.content}
+							tasks={card.tasks}
+						/>
+					</Link>
 				))}
 			</div>
 		</main>

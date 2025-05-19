@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 //components
 import SideBarButton from '../ui/SideBarButton'
 
@@ -52,13 +52,23 @@ function SideBar() {
 		localStorage.removeItem('name')
 		navigate('/login')
 	}
+
+	useEffect(() => {
+		setAcitve({
+			home: true,
+			history: false,
+			profile: false,
+		})
+	}, [])
 	return (
 		<main className="h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
 			<div>
-				<div className="flex flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
+				<Link
+					to={'/home'}
+					className="flex flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
 					<span className="font-bold text-5xl mx-auto">Counter</span>
 					<span className="font-bold text-5xl ml-[40%]">Tasks</span>
-				</div>
+				</Link>
 
 				<div className="p-2 mx-auto w-64 mt-10">
 					<ul className="flex flex-col gap-2">
