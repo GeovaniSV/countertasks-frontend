@@ -19,7 +19,7 @@ function SideBar() {
 		history: false,
 		profile: false,
 	})
-	const buttonRef = useRef<HTMLButtonElement>(null)
+	const buttonRef = useRef<HTMLAnchorElement>(null)
 
 	const handleHomeButton = () => {
 		setAcitve({
@@ -50,7 +50,6 @@ function SideBar() {
 		localStorage.removeItem('email')
 		localStorage.removeItem('userId')
 		localStorage.removeItem('name')
-		navigate('/login')
 	}
 
 	useEffect(() => {
@@ -74,6 +73,7 @@ function SideBar() {
 					<ul className="flex flex-col gap-2">
 						<li>
 							<SideBarButton
+								to="/home"
 								ref={buttonRef}
 								title="INÍCIO"
 								onClick={handleHomeButton}
@@ -84,6 +84,7 @@ function SideBar() {
 
 						<li>
 							<SideBarButton
+								to="/history"
 								ref={buttonRef}
 								title="HISTÓRICO"
 								onClick={handleHistoryButton}
@@ -94,6 +95,7 @@ function SideBar() {
 
 						<li>
 							<SideBarButton
+								to=""
 								ref={buttonRef}
 								title="PERFIL"
 								onClick={handleProfileButton}
@@ -109,6 +111,7 @@ function SideBar() {
 				<div className="border-t border-gray-300 shadow-inner">
 					<div className="p-2 mx-auto w-64">
 						<SideBarButton
+							to="/login"
 							ref={buttonRef}
 							title="SAIR"
 							onClick={handleLogout}>

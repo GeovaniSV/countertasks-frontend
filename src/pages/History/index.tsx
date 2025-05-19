@@ -26,25 +26,26 @@ type cardsProps = {
 	authorId: number
 }
 
-function Home() {
+function History() {
 	const [cards, setCards] = useState<cardsProps[]>([])
 	const [openCreateModal, setOpenCreateModal] = useState(false)
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
 	const [perPage, setPerPage] = useState(9)
+
 	const pagination = {
 		totalPage: Math.ceil(cards.length / perPage),
 	}
 	const lastIndex = currentPage * perPage
 	const firstIndex = lastIndex - perPage
-	const cardsUnfinished = cards.filter((card) => {
-		if (card.done === false) {
+	const cardsFinished = cards.filter((card) => {
+		if (card.done === true) {
 			return card
 		}
 	})
-	let totalItems = cardsUnfinished.length
-	const cardsReversed = cardsUnfinished.slice(0).reverse()
+	let totalItems = cardsFinished.length
+	const cardsReversed = cardsFinished.slice(0).reverse()
 	const cardsPagination = cardsReversed.slice(firstIndex, lastIndex)
 
 	const paginationControl = {
@@ -70,7 +71,7 @@ function Home() {
 		},
 	}
 
-	async function getCards() {
+	const getCards = async () => {
 		const token = localStorage.getItem('token')
 		try {
 			const { data } = await api.get('/cards', {
@@ -148,7 +149,7 @@ function Home() {
 								Pagina atual {cards.length ? currentPage : '0'} de{' '}
 								{pagination.totalPage}
 							</span>
-							<span>Total de {totalItems} cards</span>
+							<span>Total de {totalItems} items</span>
 						</div>
 					</div>
 				</div>
@@ -156,7 +157,7 @@ function Home() {
 
 			<div className="grid grid-cols-3 gap-3 max-md:hidden">
 				{cardsPagination.map((card) =>
-					card.done === true ? null : (
+					card.done === false ? null : (
 						<Link
 							className="cursor-pointer hover:bg-gray-100 rounded-lg"
 							to={`/card/${card.id}`}
@@ -174,7 +175,7 @@ function Home() {
 
 			<div className="flex flex-col gap-5 md:hidden overflow-auto max-h-screen">
 				{cardsReversed.map((card) =>
-					card.done === true ? null : (
+					card.done === false ? null : (
 						<Link
 							className="cursor-pointer hover:bg-gray-100 rounded-lg"
 							to={`/card/${card.id}`}
@@ -193,4 +194,4 @@ function Home() {
 	)
 }
 
-export default Home
+export default History

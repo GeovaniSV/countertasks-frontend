@@ -17,6 +17,16 @@ import {
 	ChevronRightIcon,
 } from '@heroicons/react/24/outline'
 
+type cardsProps = {
+	id: number
+	title: string
+	subtitle: string
+	content: string
+	done: boolean
+	tasks: []
+	authorId: number
+}
+
 type taskProps = {
 	id: number
 	content: string
@@ -26,13 +36,14 @@ type taskProps = {
 
 function TaskTable() {
 	//na tela cabem até 11 tasks
+	const [cards, setCards] = useState<cardsProps[]>([])
 	const [tasks, setTasks] = useState<taskProps[]>([])
 	const navigate = useNavigate()
 	let params = useParams()
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
-	const [perPage, setPerPage] = useState(11)
+	const [perPage, setPerPage] = useState(13)
 	const pagination = {
 		totalPage: Math.ceil(tasks.length / perPage),
 	}
@@ -90,6 +101,22 @@ function TaskTable() {
 		}
 	}
 
+	const getCards = async () => {
+		const token = localStorage.getItem('token')
+		try {
+			const { data } = await api.get('/cards', {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+			if (!data) {
+				return
+			} else {
+				setCards(data)
+			}
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
 	const handleDeleteCard = async () => {
 		const token = localStorage.getItem('token')
 		try {
@@ -102,7 +129,43 @@ function TaskTable() {
 		}
 	}
 
+	const handleFinishCard = () => {
+		const card = cards.filter((card) => {
+			if (card.id === Number(params.id)) {
+				return card
+			}
+		})
+		const token: any = localStorage.getItem('token')
+		tasks.forEach((task) => {
+			if (task.done === false) {
+				handleFinishTask(task.id)
+			}
+		})
+
+		try {
+			api.put(
+				`/cards/${params.id}`,
+				{
+					title: card[0].title,
+					subtitle: card[0].subtitle,
+					content: card[0].content,
+					done: true,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+			navigate('/home')
+		} catch (e) {
+			console.log(e)
+		}
+	}
+
 	const handleFinishTask = async (id: number) => {
+		const card = cards.filter((card) => {
+			if (card.id === Number(params.id)) {
+				return card
+			}
+		})
+
 		const task = tasks.filter((task) => {
 			if (task.id === id) {
 				return task
@@ -125,6 +188,22 @@ function TaskTable() {
 				console.log(e)
 			}
 		} else if (task[0].done === true) {
+			if (card[0].done === true) {
+				try {
+					api.put(
+						`/cards/${params.id}`,
+						{
+							title: card[0].title,
+							subtitle: card[0].subtitle,
+							content: card[0].content,
+							done: false,
+						},
+						{ headers: { Authorization: `Bearer ${token}` } },
+					)
+				} catch (e) {
+					console.log(e)
+				}
+			}
 			try {
 				await api.put(
 					`/tasks/${id}`,
@@ -142,6 +221,7 @@ function TaskTable() {
 	}
 
 	useEffect(() => {
+		getCards()
 		getTasks()
 	}, [tasks.length])
 	return (
@@ -149,11 +229,18 @@ function TaskTable() {
 			<div className="px-8 ">
 				<div className="flex justify-between ">
 					<span className="font-medium text-4xl">Tasks</span>
-					<button
-						onClick={() => handleDeleteCard()}
-						className="flex w-56 bg-red-500 hover:bg-red-700 cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1">
-						<span>Deletar Card</span>
-					</button>
+					<div className="flex gap-5">
+						<button
+							onClick={() => handleDeleteCard()}
+							className="flex w-56 bg-red-500 hover:bg-red-700 cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1">
+							<span>Deletar Card</span>
+						</button>
+						<button
+							onClick={handleFinishCard}
+							className="flex w-56 bg-blueCS hover:bg-blueCSHover cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1">
+							Finalizar Card
+						</button>
+					</div>
 				</div>
 
 				<div className="mt-4">
