@@ -4,7 +4,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 
 type InputProps = {
 	label?: string
-	ref: React.Ref<HTMLInputElement>
+	ref?: React.Ref<HTMLInputElement>
 } & InputHTMLAttributes<HTMLInputElement>
 
 function SearchBar({ label, ref, className, ...rest }: InputProps) {

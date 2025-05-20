@@ -17,12 +17,14 @@ function Login() {
 
 	const handleSubmit = async () => {
 		try {
-			const { data: token } = await api.post('/login', {
+			const { data } = await api.post('/login', {
 				email: inputValues.email,
 				password: inputValues.password,
 			})
-			localStorage.setItem('token', token)
-			localStorage.setItem('email', inputValues.email)
+			localStorage.setItem('token', data.token)
+			localStorage.setItem('userId', data.user.id)
+			localStorage.setItem('name', data.user.name)
+			localStorage.setItem('email', data.user.email)
 			navigate('/home')
 		} catch (e) {
 			console.log(e)

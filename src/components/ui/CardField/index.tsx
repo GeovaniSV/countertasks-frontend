@@ -58,8 +58,8 @@ function CardField({ title, content, subtitle, tasks }: CardProps) {
 	}, [tasks])
 	return (
 		<div className="border border-gray-200 w-full shadow-lg rounded-lg p-2">
-			<div className=" grid grid-cols-2">
-				<div>
+			<div className="grid grid-cols-2">
+				<div className="flex flex-col items-start ">
 					<p>{title}</p>
 					<p>{subtitle}</p>
 					<p className="flex items-center gap-1">
