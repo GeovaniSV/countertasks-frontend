@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 //components
 import SideBarButton from '../ui/SideBarButton'
 
@@ -13,37 +13,13 @@ import {
 } from '@heroicons/react/24/outline'
 
 function SideBar() {
-	const navigate = useNavigate()
+	const location = useLocation()
 	const [active, setAcitve] = useState({
 		home: false,
 		history: false,
 		profile: false,
 	})
 	const buttonRef = useRef<HTMLAnchorElement>(null)
-
-	const handleHomeButton = () => {
-		setAcitve({
-			home: true,
-			history: false,
-			profile: false,
-		})
-	}
-
-	const handleHistoryButton = () => {
-		setAcitve({
-			home: false,
-			history: true,
-			profile: false,
-		})
-	}
-
-	const handleProfileButton = () => {
-		setAcitve({
-			home: false,
-			history: false,
-			profile: true,
-		})
-	}
 
 	const handleLogout = () => {
 		localStorage.removeItem('token')
@@ -52,13 +28,18 @@ function SideBar() {
 		localStorage.removeItem('name')
 	}
 
+	const handleParams = () => {
+		location.pathname === '/home'
+			? setAcitve({ home: true, history: false, profile: false })
+			: location.pathname === '/history'
+				? setAcitve({ home: false, history: true, profile: false })
+				: setAcitve({ home: false, history: false, profile: false })
+	}
+	console.log(location)
+
 	useEffect(() => {
-		setAcitve({
-			home: true,
-			history: false,
-			profile: false,
-		})
-	}, [])
+		handleParams()
+	}, [location.pathname])
 	return (
 		<main className="h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
 			<div>
@@ -76,7 +57,6 @@ function SideBar() {
 								to="/home"
 								ref={buttonRef}
 								title="INÍCIO"
-								onClick={handleHomeButton}
 								className={`${active.home ? 'bg-amber-200' : ''}`}>
 								<HomeIcon className="size-8" />
 							</SideBarButton>
@@ -87,7 +67,6 @@ function SideBar() {
 								to="/history"
 								ref={buttonRef}
 								title="HISTÓRICO"
-								onClick={handleHistoryButton}
 								className={`${active.history ? 'bg-amber-200' : ''}`}>
 								<RectangleStackIcon className="size-8" />
 							</SideBarButton>
@@ -98,7 +77,6 @@ function SideBar() {
 								to=""
 								ref={buttonRef}
 								title="PERFIL"
-								onClick={handleProfileButton}
 								className={`${active.profile ? 'bg-amber-200' : ''}`}>
 								<UserIcon className="size-8" />
 							</SideBarButton>

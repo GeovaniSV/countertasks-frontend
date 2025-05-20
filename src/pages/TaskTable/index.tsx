@@ -2,11 +2,6 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import { api } from '../../services/api'
-
-//components
-import SearchBar from '../../components/ui/SearchBarField'
-import ButtonField from '../../components/ui/ButtonField'
-
 //icons
 import {
 	PencilSquareIcon,
@@ -43,7 +38,7 @@ function TaskTable() {
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
-	const [perPage, setPerPage] = useState(13)
+	const [perPage] = useState(13)
 	const pagination = {
 		totalPage: Math.ceil(tasks.length / perPage),
 	}
