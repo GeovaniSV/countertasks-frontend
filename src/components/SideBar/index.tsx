@@ -29,13 +29,18 @@ function SideBar() {
 	}
 
 	const handleParams = () => {
-		location.pathname === '/home'
-			? setAcitve({ home: true, history: false, profile: false })
-			: location.pathname === '/history'
-				? setAcitve({ home: false, history: true, profile: false })
-				: setAcitve({ home: false, history: false, profile: false })
+		if (location.pathname === '/home') {
+			setAcitve({ home: true, history: false, profile: false })
+		}
+
+		if (location.pathname === '/history') {
+			setAcitve({ home: false, history: true, profile: false })
+		}
+
+		if (location.pathname === '/profile') {
+			setAcitve({ home: false, history: false, profile: true })
+		}
 	}
-	console.log(location)
 
 	useEffect(() => {
 		handleParams()
@@ -57,7 +62,7 @@ function SideBar() {
 								to="/home"
 								ref={buttonRef}
 								title="INÍCIO"
-								className={`${active.home ? 'bg-amber-200' : ''}`}>
+								className={active.home ? 'bg-amber-200' : ''}>
 								<HomeIcon className="size-8" />
 							</SideBarButton>
 						</li>
@@ -67,17 +72,17 @@ function SideBar() {
 								to="/history"
 								ref={buttonRef}
 								title="HISTÓRICO"
-								className={`${active.history ? 'bg-amber-200' : ''}`}>
+								className={active.history ? 'bg-amber-200' : ''}>
 								<RectangleStackIcon className="size-8" />
 							</SideBarButton>
 						</li>
 
 						<li>
 							<SideBarButton
-								to=""
+								to="/profile"
 								ref={buttonRef}
 								title="PERFIL"
-								className={`${active.profile ? 'bg-amber-200' : ''}`}>
+								className={active.profile ? 'bg-amber-200' : ''}>
 								<UserIcon className="size-8" />
 							</SideBarButton>
 						</li>
