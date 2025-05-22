@@ -20,7 +20,7 @@ function Modal({ isOpen, setModalOpen }: ModalProps) {
 		content: '',
 		task: '',
 	})
-	const [tasks, setTasks] = useState<taskProps[]>([])
+	const [tasks] = useState<taskProps[]>([])
 	const taskInputRef = useRef<HTMLInputElement>(null)
 
 	const taskSubmit = () => {
