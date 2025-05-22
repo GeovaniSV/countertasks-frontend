@@ -1,0 +1,10 @@
+.backgroundProfile {
+    background-image: url(../../assets/profilePic.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100rem;
+}
+
+.bg-css {
+    background-image: url(../../assets/bgWhite.png  );
+}

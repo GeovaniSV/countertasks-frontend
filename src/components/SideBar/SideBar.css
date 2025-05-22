@@ -1,0 +1,32 @@
+.sideBarTransition {
+    transition: .5s all; 
+}
+
+.animate {
+    animation: animate 300ms forwards ease-in-out;
+}
+
+@keyframes animate {
+    0%  {
+        width: 0px;
+    }
+    50% {
+        width: 150px;
+    }
+    100% {
+        width: 288px;
+    }
+}
+
+.buttonAnimate {
+    animation: buttonAnimate 600ms forwards ease-in-out;
+}
+
+@keyframes buttonAnimate {
+    from  {
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
