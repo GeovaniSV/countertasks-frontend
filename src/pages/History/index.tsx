@@ -92,7 +92,7 @@ function History() {
 	}, [openCreateModal, Modal])
 
 	return (
-		<main className="w-full py-4 px-8 max-sm:px-2">
+		<main className="w-full py-4 px-8 max-sm:px-2 max-lg:mt-20 max-md:mt-16">
 			<Modal
 				isOpen={openCreateModal}
 				setModalOpen={() => setOpenCreateModal(false)}

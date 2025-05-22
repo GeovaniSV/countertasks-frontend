@@ -8,7 +8,7 @@ interface headerProps {
 
 function Header({ handleOpenSideBar }: headerProps) {
 	return (
-		<main className="lg:hidden border-b flex justify-between max-md:h-16 h-20 items-center border-gray-300 shadow-lg">
+		<main className="lg:hidden border-b flex fixed bg-white max-lg:w-full justify-between max-md:h-16 h-20 items-center border-gray-300 shadow-lg">
 			<div className="h-full w-16">
 				<button
 					onClick={handleOpenSideBar}

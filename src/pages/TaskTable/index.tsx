@@ -220,9 +220,9 @@ function TaskTable() {
 		getTasks()
 	}, [tasks.length])
 	return (
-		<main className="w-full py-4">
+		<main className="w-full py-4 max-lg:mt-20 max-md:mt-16">
 			<div className="px-8 ">
-				<div className="flex justify-between ">
+				<div className="flex justify-between max-md:flex-col max-md:gap-5">
 					<span className="font-medium text-4xl">Tasks</span>
 					<div className="flex gap-5">
 						<button
