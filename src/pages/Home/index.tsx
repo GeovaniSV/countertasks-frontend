@@ -32,7 +32,7 @@ function Home() {
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
-	const [perPage, setPerPage] = useState(9)
+	const [perPage] = useState(9)
 	const pagination = {
 		totalPage: Math.ceil(cards.length / perPage),
 	}

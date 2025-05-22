@@ -36,7 +36,7 @@ function ProgressBar(props: LinearProgressProps & { value: number }) {
 function CardProfileField({ title, content, subtitle, cards }: CardProps) {
 	const [progressBar, setProgressBar] = useState(0)
 	const [progress, setProgress] = useState('')
-	const [screeTask, setScreenTask] = useState('')
+	const [screeTask] = useState('')
 	const cardsLength = cards ? cards.length : 0
 
 	const handleProgressBar = () => {
