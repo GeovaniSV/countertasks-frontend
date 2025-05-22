@@ -28,7 +28,7 @@ function ProgressBar(props: LinearProgressProps & { value: number }) {
 function CardField({ title, content, subtitle, tasks }: CardProps) {
 	const [progressBar, setProgressBar] = useState(0)
 	const [progress, setProgress] = useState('')
-	const [screeTask, setScreenTask] = useState('')
+	const [screeTask] = useState('')
 
 	const handleProgressBar = () => {
 		let taskDone: number = 0
@@ -50,11 +50,8 @@ function CardField({ title, content, subtitle, tasks }: CardProps) {
 		}
 	}
 
-	const handleTaskScreen = () => {}
-
 	useEffect(() => {
 		handleProgressBar()
-		handleTaskScreen()
 	}, [tasks])
 	return (
 		<div className="border border-gray-200 w-full shadow-lg rounded-lg p-2">

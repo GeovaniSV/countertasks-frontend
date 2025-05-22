@@ -38,7 +38,6 @@ function CardProfileField({ title, content, subtitle, cards }: CardProps) {
 	const [progress, setProgress] = useState('')
 	const [screeTask, setScreenTask] = useState('')
 	const cardsLength = cards ? cards.length : 0
-	console.log(cards?.length)
 
 	const handleProgressBar = () => {
 		let taskDone: number = 0

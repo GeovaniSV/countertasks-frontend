@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import './SideBar.css'
+
 //components
 import SideBarButton from '../ui/SideBarButton'
 
@@ -12,7 +14,11 @@ import {
 	ArrowLeftStartOnRectangleIcon,
 } from '@heroicons/react/24/outline'
 
-function SideBar() {
+interface sideBarProps {
+	sideBarStatus: boolean
+}
+
+function SideBar({ sideBarStatus }: sideBarProps) {
 	const location = useLocation()
 	const [active, setAcitve] = useState({
 		home: false,
@@ -46,16 +52,17 @@ function SideBar() {
 		handleParams()
 	}, [location.pathname])
 	return (
-		<main className="h-screen border-r border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between max-lg:hidden">
+		<main
+			className={`${sideBarStatus ? '' : 'max-lg:hidden'} animate h-screen border-r max-lg:relative border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between `}>
 			<div>
 				<Link
 					to={'/home'}
-					className="flex flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
+					className="flex max-lg:hidden flex-col items-end border-b pr-10 pb-2 border-gray-400 shadow-sm mt-5">
 					<span className="font-bold text-5xl mx-auto">Counter</span>
 					<span className="font-bold text-5xl ml-[40%]">Tasks</span>
 				</Link>
 
-				<div className="p-2 mx-auto w-64 mt-10">
+				<div className="buttonAnimate p-2 mx-auto w-64 mt-10">
 					<ul className="flex flex-col gap-2">
 						<li>
 							<SideBarButton

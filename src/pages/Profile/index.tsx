@@ -33,17 +33,22 @@ type userProps = {
 
 function Profile() {
 	const [user, setUser] = useState<userProps>()
+
 	const [tasks, setTasks] = useState<tasksProps[]>([])
 	const [inputValues, setInputValues] = useState({
 		name: '',
 		email: '',
 	})
 
-	console.log(tasks)
-
-	const cardsFinalizados = user?.cards.filter((card) => {
+	const finishedCards = user?.cards.filter((card) => {
 		if (card.done === true) {
 			return card
+		}
+	})
+
+	const finishedTasks = tasks.filter((task) => {
+		if (task.done === true) {
+			return task
 		}
 	})
 
@@ -64,8 +69,24 @@ function Profile() {
 			console.log(e)
 		}
 	}
+
+	const getUserCards = async () => {
+		const token = localStorage.getItem('token')
+		const id = localStorage.getItem('userId')
+		try {
+			const { data } = await api.get(`/cards/user/${id}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			})
+
+			const allTasks = data.flatMap((card: cardsProps) => card.tasks)
+			setTasks(allTasks)
+		} catch (e) {
+			console.log(e)
+		}
+	}
 	useEffect(() => {
 		getUser()
+		getUserCards()
 	}, [])
 	return (
 		<main className="w-full py-4 px-8 max-sm:px-2 bg-css">
@@ -79,6 +100,7 @@ function Profile() {
 							<input
 								type="text"
 								name="name"
+								id="name"
 								value={inputValues.name}
 								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 									setInputValues({ ...inputValues, name: e.target.value })
@@ -91,6 +113,7 @@ function Profile() {
 							<input
 								type="text"
 								name="email"
+								id="email"
 								value={inputValues.email}
 								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 									setInputValues({ ...inputValues, email: e.target.value })
@@ -106,26 +129,32 @@ function Profile() {
 					<div className="border border-gray-300 shadow-xl rounded-3xl bg-white p-5 flex flex-col gap-5">
 						<CardProfileField
 							title="Cards finalizados"
-							subtitle={`${cardsFinalizados ? cardsFinalizados.length : null} de ${user?.cards.length}`}
-							content={`Aqui estão todos os cards que foram finalizados por você`}
+							subtitle={`${finishedCards ? finishedCards.length : null} de ${user?.cards.length}`}
+							content={`Aqui está a quantidade de cards que foram finalizados por você`}
 							cards={user?.cards}
 						/>
 
 						<div>
-							<ButtonField title="Criar cards" />
+							<ButtonField
+								title="Criar cards"
+								onClick={() => (window.location.href = '/home')}
+							/>
 						</div>
 					</div>
 
 					<div className="border border-gray-300 rounded-3xl p-5 bg-white shadow-xl flex flex-col gap-5">
 						<CardField
-							title="Cards finalizados"
-							subtitle={`${cardsFinalizados ? cardsFinalizados.length : null} de ${user?.cards.length}`}
-							content={`Aqui estão todos os cards que foram finalizados por você`}
+							title="Tasks finalizadas"
+							subtitle={`${finishedTasks ? finishedTasks.length : null} de ${tasks.length}`}
+							content={`Aqui está a quantidade de tasks que foram finalizadas por você`}
 							tasks={tasks}
 						/>
 
 						<div>
-							<ButtonField title="Criar cards" />
+							<ButtonField
+								title="Ver Tasks Não Finalizadas"
+								onClick={() => (window.location.href = '/home')}
+							/>
 						</div>
 					</div>
 				</div>
