@@ -89,10 +89,10 @@ function Profile() {
 		getUserCards()
 	}, [])
 	return (
-		<main className="w-full py-4 px-8 max-sm:px-2 bg-css">
-			<div className="grid grid-cols-2 gap-10 p-10">
+		<main className="w-full py-4 px-8 max-sm:px-2 bg-css max-lg:mt-10">
+			<div className="grid grid-cols-2 gap-10 p-10 max-md:grid-cols-1 max-md:p-5">
 				<div className="flex flex-col border border-gray-300 rounded-3xl shadow-lg p-5 items-center gap-10 bg-white">
-					<div className="backgroundProfile h-64 w-64 rounded-full"></div>
+					<div className="backgroundProfile h-64 w-64 rounded-full max-sm:w-56 max-sm:h-56"></div>
 
 					<div className="flex flex-col gap-5 text-lg w-full p-2">
 						<div className="w-full flex flex-col gap-1">

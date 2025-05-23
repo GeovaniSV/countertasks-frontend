@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import SearchBar from '../../components/ui/SearchBarField'
 import CardField from '../../components/ui/CardField'
-import Modal from '../../components/CreateCardModal'
+import Modal from '../../components/Modal'
+import InputField from '../../components/ui/InputField'
 
 //Api
 import { api } from '../../services/api'
@@ -16,6 +17,10 @@ import {
 } from '@heroicons/react/24/outline'
 import { Link } from 'react-router-dom'
 
+type taskProps = {
+	content: string
+}
+
 type cardsProps = {
 	id: number
 	title: string
@@ -29,6 +34,65 @@ type cardsProps = {
 function Home() {
 	const [cards, setCards] = useState<cardsProps[]>([])
 	const [openCreateModal, setOpenCreateModal] = useState(false)
+	const [renderUseEffect, setRenderUseEffect] = useState(0)
+	const [inputValues, setInputValues] = useState({
+		title: '',
+		subTitle: '',
+		content: '',
+		task: '',
+	})
+	const [tasks] = useState<taskProps[]>([])
+	const taskInputRef = useRef<HTMLInputElement>(null)
+
+	const taskSubmit = () => {
+		const task = {
+			content: '',
+		}
+		if (inputValues.task) {
+			task.content = inputValues.task
+		}
+
+		if (task.content) {
+			tasks.push(task)
+		}
+
+		setInputValues({ ...inputValues, task: '' })
+		taskInputRef.current?.focus()
+	}
+
+	const modalSubmit = async () => {
+		const token = localStorage.getItem('token')
+		const authorId = localStorage.getItem('userId')
+		try {
+			api.post(
+				'/cards',
+				{
+					title: inputValues.title,
+					subtitle: inputValues.subTitle,
+					content: inputValues.content,
+					authorId: authorId,
+					tasks: tasks,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+		} catch (e) {
+			console.log(e)
+		}
+		if (renderUseEffect < 1) {
+			setRenderUseEffect(renderUseEffect + 1)
+		} else {
+			setRenderUseEffect(renderUseEffect - 1)
+		}
+		setOpenCreateModal(false)
+	}
+
+	const keyEvent = (e: React.KeyboardEvent) => {
+		const { code } = e
+
+		if (['Enter', 'NumpadEnter'].includes(code)) {
+			taskSubmit()
+		}
+	}
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
@@ -88,17 +152,61 @@ function Home() {
 
 	useEffect(() => {
 		getCards()
-	}, [openCreateModal, Modal])
+	}, [renderUseEffect])
 
 	return (
-		<main className="w-full py-4 px-8 max-sm:px-2">
+		<main className="w-full py-4 px-8 max-sm:px-2 max-lg:mt-20 max-md:mt-16">
 			<Modal
 				isOpen={openCreateModal}
 				setModalOpen={() => setOpenCreateModal(false)}
-			/>
+				title="Crie seu card!"
+				buttonTitle="Criar card"
+				func={modalSubmit}>
+				<form className="w-full flex flex-col gap-2">
+					<InputField
+						label="Titulo"
+						placeholder="Digite o titulo aqui"
+						value={inputValues.title}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, title: e.target.value })
+						}
+					/>
+					<InputField
+						label="Subtitulo"
+						placeholder="Digite o subtitulo aqui!"
+						value={inputValues.subTitle}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, subTitle: e.target.value })
+						}
+					/>
+					<div>
+						<label htmlFor="content">Conteúdo</label>
+						<textarea
+							name="content"
+							id="content"
+							className="w-full bg-gray-300 border-b-2 outline-none rounded-sm p-1.5"
+							placeholder="Digite um resumo do card"
+							value={inputValues.content}
+							onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+								setInputValues({ ...inputValues, content: e.target.value })
+							}></textarea>
+					</div>
+
+					<InputField
+						label="Tasks"
+						ref={taskInputRef}
+						placeholder="coloque uma Task por vez! Utilize 'Enter'"
+						value={inputValues.task}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, task: e.target.value })
+						}
+						onKeyDown={(e: React.KeyboardEvent) => keyEvent(e)}
+					/>
+				</form>
+			</Modal>
 
 			<div>
-				<div className="flex justify-between">
+				<div className="flex justify-between max-sm:flex-col">
 					<span className="font-medium text-4xl">Cards</span>
 					<button
 						className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1"

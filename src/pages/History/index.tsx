@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import SearchBar from '../../components/ui/SearchBarField'
 import CardField from '../../components/ui/CardField'
-import Modal from '../../components/CreateCardModal'
+import Modal from '../../components/Modal'
+import InputField from '../../components/ui/InputField'
 
 //Api
 import { api } from '../../services/api'
@@ -13,8 +15,12 @@ import {
 	ChevronRightIcon,
 	ChevronDoubleLeftIcon,
 	ChevronDoubleRightIcon,
+	PaperAirplaneIcon,
 } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+
+type taskProps = {
+	content: string
+}
 
 type cardsProps = {
 	id: number
@@ -29,6 +35,66 @@ type cardsProps = {
 function History() {
 	const [cards, setCards] = useState<cardsProps[]>([])
 	const [openCreateModal, setOpenCreateModal] = useState(false)
+
+	const [renderUseEffect, setRenderUseEffect] = useState(0)
+	const [inputValues, setInputValues] = useState({
+		title: '',
+		subTitle: '',
+		content: '',
+		task: '',
+	})
+	const [tasks] = useState<taskProps[]>([])
+	const taskInputRef = useRef<HTMLInputElement>(null)
+
+	const taskSubmit = () => {
+		const task = {
+			content: '',
+		}
+		if (inputValues.task) {
+			task.content = inputValues.task
+		}
+
+		if (task.content) {
+			tasks.push(task)
+		}
+
+		setInputValues({ ...inputValues, task: '' })
+		taskInputRef.current?.focus()
+	}
+
+	const modalSubmit = async () => {
+		const token = localStorage.getItem('token')
+		const authorId = localStorage.getItem('userId')
+		try {
+			api.post(
+				'/cards',
+				{
+					title: inputValues.title,
+					subtitle: inputValues.subTitle,
+					content: inputValues.content,
+					authorId: authorId,
+					tasks: tasks,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+		} catch (e) {
+			console.log(e)
+		}
+		if (renderUseEffect < 1) {
+			setRenderUseEffect(renderUseEffect + 1)
+		} else {
+			setRenderUseEffect(renderUseEffect - 1)
+		}
+		setOpenCreateModal(false)
+	}
+
+	const keyEvent = (e: React.KeyboardEvent) => {
+		const { code } = e
+
+		if (['Enter', 'NumpadEnter'].includes(code)) {
+			taskSubmit()
+		}
+	}
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
@@ -89,17 +155,71 @@ function History() {
 
 	useEffect(() => {
 		getCards()
-	}, [openCreateModal, Modal])
+	}, [openCreateModal, Modal, renderUseEffect])
 
 	return (
-		<main className="w-full py-4 px-8 max-sm:px-2">
+		<main className="w-full py-4 px-8 max-sm:px-2 max-lg:mt-20 max-md:mt-16">
 			<Modal
 				isOpen={openCreateModal}
 				setModalOpen={() => setOpenCreateModal(false)}
-			/>
+				title="Crie seu card!"
+				buttonTitle="Criar card"
+				func={modalSubmit}>
+				<div className="w-full flex flex-col gap-2">
+					<InputField
+						label="Titulo"
+						placeholder="Digite o titulo aqui"
+						value={inputValues.title}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, title: e.target.value })
+						}
+					/>
+					<InputField
+						label="Subtitulo"
+						placeholder="Digite o subtitulo aqui!"
+						value={inputValues.subTitle}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, subTitle: e.target.value })
+						}
+					/>
+					<div>
+						<label htmlFor="content">Conteúdo</label>
+						<textarea
+							name="content"
+							id="content"
+							className="w-full bg-gray-300 border-b-2 outline-none rounded-sm p-1.5"
+							placeholder="Digite um resumo do card"
+							value={inputValues.content}
+							onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+								setInputValues({ ...inputValues, content: e.target.value })
+							}></textarea>
+					</div>
+
+					<label htmlFor="tasks">Tasks</label>
+					<div className="w-full flex">
+						<input
+							type="text"
+							name="tasks"
+							id="tasks"
+							className="p-1.5 w-full bg-gray-300 rounded-l-sm border-b-2 outline-none"
+							placeholder={`Uma Task por vez! ${window.screen.width < 1024 ? 'Clique no botão >>' : 'Utilize "Enter"'}`}
+							value={inputValues.task}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setInputValues({ ...inputValues, task: e.target.value })
+							}
+							onKeyDown={(e: React.KeyboardEvent) => keyEvent(e)}
+						/>
+						<button
+							onClick={taskSubmit}
+							className="p-1.5 border-b-2 bg-gray-300 rounded-r-sm">
+							<PaperAirplaneIcon className="size-5" />
+						</button>
+					</div>
+				</div>
+			</Modal>
 
 			<div>
-				<div className="flex justify-between">
+				<div className="flex justify-between max-sm:flex-col">
 					<span className="font-medium text-4xl">Cards</span>
 					<button
 						className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1"

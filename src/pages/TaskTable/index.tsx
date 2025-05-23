@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import { api } from '../../services/api'
+
+import Modal from '../../components/Modal'
+
 //icons
 import {
 	PencilSquareIcon,
@@ -10,7 +13,9 @@ import {
 	ChevronLeftIcon,
 	ChevronDoubleRightIcon,
 	ChevronRightIcon,
+	CheckIcon,
 } from '@heroicons/react/24/outline'
+import InputField from '../../components/ui/InputField'
 
 type cardsProps = {
 	id: number
@@ -30,9 +35,14 @@ type taskProps = {
 }
 
 function TaskTable() {
-	//na tela cabem até 11 tasks
+	const [openModal, setOpenModal] = useState(false)
+	const [renderUseEffect, setRenderUseEffect] = useState(0)
 	const [cards, setCards] = useState<cardsProps[]>([])
 	const [tasks, setTasks] = useState<taskProps[]>([])
+	const [inputValues, setInputValues] = useState({
+		content: '',
+	})
+	const [taskID, setTaskID] = useState(0)
 	const navigate = useNavigate()
 	let params = useParams()
 
@@ -69,6 +79,11 @@ function TaskTable() {
 		first() {
 			setCurrentPage(1)
 		},
+	}
+
+	const handleUpdateTask = (id: number) => {
+		setOpenModal(true)
+		setTaskID(id)
 	}
 
 	const getTasks = async () => {
@@ -124,7 +139,7 @@ function TaskTable() {
 		}
 	}
 
-	const handleFinishCard = () => {
+	const handleFinishCard = async () => {
 		const card = cards.filter((card) => {
 			if (card.id === Number(params.id)) {
 				return card
@@ -138,7 +153,7 @@ function TaskTable() {
 		})
 
 		try {
-			api.put(
+			await api.put(
 				`/cards/${params.id}`,
 				{
 					title: card[0].title,
@@ -215,14 +230,53 @@ function TaskTable() {
 		}
 	}
 
+	const updateTask = async (id: number) => {
+		const token = localStorage.getItem('tokne')
+
+		try {
+			await api.put(
+				`/tasks/${id}`,
+				{
+					content: inputValues.content,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+			setOpenModal(false)
+		} catch (e) {
+			console.log(e)
+		}
+		if (renderUseEffect < 1) {
+			setRenderUseEffect(renderUseEffect + 1)
+		} else {
+			setRenderUseEffect(renderUseEffect - 1)
+		}
+	}
+
 	useEffect(() => {
 		getCards()
 		getTasks()
-	}, [tasks.length])
+	}, [tasks.length, renderUseEffect])
 	return (
-		<main className="w-full py-4">
+		<main className="w-full py-4 max-lg:mt-20 max-md:mt-16">
+			<Modal
+				isOpen={openModal}
+				setModalOpen={() => setOpenModal(false)}
+				title="Alterar Task"
+				buttonTitle="Confirmar"
+				func={() => updateTask(taskID)}>
+				<div className="w-full mt-5">
+					<InputField
+						label="Descrição"
+						value={inputValues.content}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, content: e.target.value })
+						}
+						placeholder="Alterar a descrição"
+					/>
+				</div>
+			</Modal>
 			<div className="px-8 ">
-				<div className="flex justify-between ">
+				<div className="flex justify-between max-md:flex-col max-md:gap-5">
 					<span className="font-medium text-4xl">Tasks</span>
 					<div className="flex gap-5">
 						<button
@@ -279,19 +333,19 @@ function TaskTable() {
 				</div>
 			</div>
 
-			<div className="mt-2">
+			<div className="mt-2 max-md:hidden">
 				<table
 					width="100%"
-					className="text-center ">
+					className="text-center">
 					<thead className="bg-gray-300 ">
 						<tr>
-							<th>ID</th>
+							<th>Finalizar</th>
 							<th>Conteúdo</th>
 							<th>Ações</th>
 						</tr>
 					</thead>
 
-					<tbody className="max-md:hidden">
+					<tbody>
 						{tasksPagination.map((task) => (
 							<tr
 								className="hover:bg-gray-200 border-b-1 border-gray-200"
@@ -313,33 +367,9 @@ function TaskTable() {
 								</td>
 								<td className="p-1">{task.content}</td>
 								<td className="p-1">
-									<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
-										<PencilSquareIcon className="size-5 text-white font-bold" />
-									</button>
 									<button
-										className="bg-red-500 p-1 rounded-sm hover:bg-red-700 cursor-pointer ml-2"
-										onClick={() => handleDeleteTasks(task.id)}>
-										<TrashIcon className="size-5 text-white font-bold" />
-									</button>
-								</td>
-							</tr>
-						))}
-					</tbody>
-					<tbody className="md:hidden">
-						{taskRevesed.map((task) => (
-							<tr
-								className="hover:bg-gray-200 border-b-1 border-gray-200"
-								key={task.id}>
-								<td className="p-1">
-									<input
-										type="checkbox"
-										name="checkTask"
-										id="checkTasks"
-									/>
-								</td>
-								<td className="p-1">{task.content}</td>
-								<td className="p-1">
-									<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
+										className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer"
+										onClick={() => handleUpdateTask(task.id)}>
 										<PencilSquareIcon className="size-5 text-white font-bold" />
 									</button>
 									<button
@@ -352,6 +382,41 @@ function TaskTable() {
 						))}
 					</tbody>
 				</table>
+			</div>
+
+			<div className="mt-2 md:hidden p-1 flex flex-col gap-1">
+				{tasksPagination.map((task) => (
+					<div
+						className="border-1 border-gray-300 bg-gray-100 flex p-2 justify-between rounded-lg shadow-lg"
+						key={task.id}>
+						{task.done ? (
+							<button
+								onClick={() => handleFinishTask(task.id)}
+								className="bg-blueCS p-1 rounded-md text-sm w-8 text-white font-bold flex justify-center items-center">
+								<CheckIcon className="size-5" />
+							</button>
+						) : (
+							<button
+								onClick={() => handleFinishTask(task.id)}
+								className="border-1 border-gray-500 shadow-md bg-white p-1 rounded-sm text-sm w-8 text-white font-bold"></button>
+						)}
+
+						<div>{task.content}</div>
+
+						<div className="">
+							<button
+								className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer"
+								onClick={() => setOpenModal(true)}>
+								<PencilSquareIcon className="size-5 text-white font-bold" />
+							</button>
+							<button
+								className="bg-red-500 p-1 rounded-sm hover:bg-red-700 cursor-pointer ml-2"
+								onClick={() => handleDeleteTasks(task.id)}>
+								<TrashIcon className="size-5 text-white font-bold" />
+							</button>
+						</div>
+					</div>
+				))}
 			</div>
 		</main>
 	)
