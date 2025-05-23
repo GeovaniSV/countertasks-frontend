@@ -99,7 +99,7 @@ function History() {
 			/>
 
 			<div>
-				<div className="flex justify-between">
+				<div className="flex justify-between max-sm:flex-col">
 					<span className="font-medium text-4xl">Cards</span>
 					<button
 						className="flex w-56 bg-yellowCS hover:bg-orangeCS cursor-pointer items-center font-bold text-white justify-around shadow-lg rounded-sm p-1"

@@ -10,6 +10,7 @@ import {
 	ChevronLeftIcon,
 	ChevronDoubleRightIcon,
 	ChevronRightIcon,
+	CheckIcon,
 } from '@heroicons/react/24/outline'
 
 type cardsProps = {
@@ -279,19 +280,19 @@ function TaskTable() {
 				</div>
 			</div>
 
-			<div className="mt-2">
+			<div className="mt-2 max-md:hidden">
 				<table
 					width="100%"
-					className="text-center ">
+					className="text-center">
 					<thead className="bg-gray-300 ">
 						<tr>
-							<th>ID</th>
+							<th>Finalizar</th>
 							<th>Conteúdo</th>
 							<th>Ações</th>
 						</tr>
 					</thead>
 
-					<tbody className="max-md:hidden">
+					<tbody>
 						{tasksPagination.map((task) => (
 							<tr
 								className="hover:bg-gray-200 border-b-1 border-gray-200"
@@ -325,33 +326,40 @@ function TaskTable() {
 							</tr>
 						))}
 					</tbody>
-					<tbody className="md:hidden">
-						{taskRevesed.map((task) => (
-							<tr
-								className="hover:bg-gray-200 border-b-1 border-gray-200"
-								key={task.id}>
-								<td className="p-1">
-									<input
-										type="checkbox"
-										name="checkTask"
-										id="checkTasks"
-									/>
-								</td>
-								<td className="p-1">{task.content}</td>
-								<td className="p-1">
-									<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
-										<PencilSquareIcon className="size-5 text-white font-bold" />
-									</button>
-									<button
-										className="bg-red-500 p-1 rounded-sm hover:bg-red-700 cursor-pointer ml-2"
-										onClick={() => handleDeleteTasks(task.id)}>
-										<TrashIcon className="size-5 text-white font-bold" />
-									</button>
-								</td>
-							</tr>
-						))}
-					</tbody>
 				</table>
+			</div>
+
+			<div className="mt-2 md:hidden p-1 flex flex-col gap-1">
+				{tasksPagination.map((task) => (
+					<div
+						className="border-1 border-gray-300 bg-gray-100 flex p-2 justify-between rounded-lg shadow-lg"
+						key={task.id}>
+						{task.done ? (
+							<button
+								onClick={() => handleFinishTask(task.id)}
+								className="bg-blueCS p-1 rounded-md text-sm w-8 text-white font-bold flex justify-center items-center">
+								<CheckIcon className="size-5" />
+							</button>
+						) : (
+							<button
+								onClick={() => handleFinishTask(task.id)}
+								className="border-1 border-gray-500 shadow-md bg-white p-1 rounded-sm text-sm w-8 text-white font-bold"></button>
+						)}
+
+						<div>{task.content}</div>
+
+						<div className="">
+							<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
+								<PencilSquareIcon className="size-5 text-white font-bold" />
+							</button>
+							<button
+								className="bg-red-500 p-1 rounded-sm hover:bg-red-700 cursor-pointer ml-2"
+								onClick={() => handleDeleteTasks(task.id)}>
+								<TrashIcon className="size-5 text-white font-bold" />
+							</button>
+						</div>
+					</div>
+				))}
 			</div>
 		</main>
 	)
