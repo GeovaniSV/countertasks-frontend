@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import { api } from '../../services/api'
+
+import Modal from '../../components/Modal'
+
 //icons
 import {
 	PencilSquareIcon,
@@ -12,6 +15,7 @@ import {
 	ChevronRightIcon,
 	CheckIcon,
 } from '@heroicons/react/24/outline'
+import InputField from '../../components/ui/InputField'
 
 type cardsProps = {
 	id: number
@@ -31,9 +35,14 @@ type taskProps = {
 }
 
 function TaskTable() {
-	//na tela cabem até 11 tasks
+	const [openModal, setOpenModal] = useState(false)
+	const [renderUseEffect, setRenderUseEffect] = useState(0)
 	const [cards, setCards] = useState<cardsProps[]>([])
 	const [tasks, setTasks] = useState<taskProps[]>([])
+	const [inputValues, setInputValues] = useState({
+		content: '',
+	})
+	const [taskID, setTaskID] = useState(0)
 	const navigate = useNavigate()
 	let params = useParams()
 
@@ -70,6 +79,11 @@ function TaskTable() {
 		first() {
 			setCurrentPage(1)
 		},
+	}
+
+	const handleUpdateTask = (id: number) => {
+		setOpenModal(true)
+		setTaskID(id)
 	}
 
 	const getTasks = async () => {
@@ -125,7 +139,7 @@ function TaskTable() {
 		}
 	}
 
-	const handleFinishCard = () => {
+	const handleFinishCard = async () => {
 		const card = cards.filter((card) => {
 			if (card.id === Number(params.id)) {
 				return card
@@ -139,7 +153,7 @@ function TaskTable() {
 		})
 
 		try {
-			api.put(
+			await api.put(
 				`/cards/${params.id}`,
 				{
 					title: card[0].title,
@@ -216,12 +230,51 @@ function TaskTable() {
 		}
 	}
 
+	const updateTask = async (id: number) => {
+		const token = localStorage.getItem('tokne')
+
+		try {
+			await api.put(
+				`/tasks/${id}`,
+				{
+					content: inputValues.content,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			)
+			setOpenModal(false)
+		} catch (e) {
+			console.log(e)
+		}
+		if (renderUseEffect < 1) {
+			setRenderUseEffect(renderUseEffect + 1)
+		} else {
+			setRenderUseEffect(renderUseEffect - 1)
+		}
+	}
+
 	useEffect(() => {
 		getCards()
 		getTasks()
-	}, [tasks.length])
+	}, [tasks.length, renderUseEffect])
 	return (
 		<main className="w-full py-4 max-lg:mt-20 max-md:mt-16">
+			<Modal
+				isOpen={openModal}
+				setModalOpen={() => setOpenModal(false)}
+				title="Alterar Task"
+				buttonTitle="Confirmar"
+				func={() => updateTask(taskID)}>
+				<div className="w-full mt-5">
+					<InputField
+						label="Descrição"
+						value={inputValues.content}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setInputValues({ ...inputValues, content: e.target.value })
+						}
+						placeholder="Alterar a descrição"
+					/>
+				</div>
+			</Modal>
 			<div className="px-8 ">
 				<div className="flex justify-between max-md:flex-col max-md:gap-5">
 					<span className="font-medium text-4xl">Tasks</span>
@@ -314,7 +367,9 @@ function TaskTable() {
 								</td>
 								<td className="p-1">{task.content}</td>
 								<td className="p-1">
-									<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
+									<button
+										className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer"
+										onClick={() => handleUpdateTask(task.id)}>
 										<PencilSquareIcon className="size-5 text-white font-bold" />
 									</button>
 									<button
@@ -349,7 +404,9 @@ function TaskTable() {
 						<div>{task.content}</div>
 
 						<div className="">
-							<button className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer">
+							<button
+								className="bg-gray-400 p-1 rounded-sm hover:bg-gray-500 cursor-pointer"
+								onClick={() => setOpenModal(true)}>
 								<PencilSquareIcon className="size-5 text-white font-bold" />
 							</button>
 							<button

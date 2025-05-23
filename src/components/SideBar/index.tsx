@@ -53,7 +53,7 @@ function SideBar({ sideBarStatus }: sideBarProps) {
 	}, [location.pathname])
 	return (
 		<main
-			className={`${sideBarStatus ? '' : 'max-lg:hidden'} animate h-screen max-md:mt-16 max-lg:mt-20 border-r max-lg:fixed z-50 border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between `}>
+			className={`${sideBarStatus ? '' : 'max-lg:hidden'} animate h-screen max-md:mt-16 max-lg:mt-20 border-r max-lg:fixed z-30 border-gray-300 shadow-lg w-72 bg-white flex flex-col justify-between `}>
 			<div>
 				<Link
 					to={'/home'}
