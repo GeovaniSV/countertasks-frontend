@@ -84,6 +84,12 @@ function Home() {
 			setRenderUseEffect(renderUseEffect - 1)
 		}
 		setOpenCreateModal(false)
+		setInputValues({
+			title: '',
+			subTitle: '',
+			content: '',
+			task: '',
+		})
 	}
 
 	const keyEvent = (e: React.KeyboardEvent) => {
@@ -97,8 +103,14 @@ function Home() {
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
 	const [perPage] = useState(9)
+	const cardsLength = cards.filter((card) => {
+		if (card.done == false) {
+			return card
+		}
+	})
+
 	const pagination = {
-		totalPage: Math.ceil(cards.length / perPage),
+		totalPage: Math.ceil(cardsLength.length / perPage),
 	}
 	const lastIndex = currentPage * perPage
 	const firstIndex = lastIndex - perPage
@@ -151,8 +163,10 @@ function Home() {
 	}
 
 	useEffect(() => {
-		getCards()
-	}, [renderUseEffect])
+		setTimeout(() => {
+			getCards()
+		}, 100)
+	}, [openCreateModal])
 
 	return (
 		<main className="w-full py-4 px-8 max-sm:px-2 max-lg:mt-20 max-md:mt-16">
@@ -223,34 +237,31 @@ function Home() {
 					/>
 
 					<div className="flex gap-5 border-t mt-2 p-1 max-md:hidden">
-						{cards.length >= 10 && (
-							<>
-								<button
-									className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
-									onClick={paginationControl.first}
-									disabled={currentPage === 1}>
-									<ChevronDoubleLeftIcon className="size-5 text-gray-500" />
-								</button>
-								<button
-									className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
-									onClick={paginationControl.prev}
-									disabled={currentPage === 1}>
-									<ChevronLeftIcon className="size-5 text-gray-500" />
-								</button>
-								<button
-									className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
-									onClick={paginationControl.next}
-									disabled={currentPage === pagination.totalPage}>
-									<ChevronRightIcon className="size-5 text-gray-500" />
-								</button>
-								<button
-									className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
-									onClick={paginationControl.last}
-									disabled={currentPage === pagination.totalPage}>
-									<ChevronDoubleRightIcon className="size-5 text-gray-500" />
-								</button>
-							</>
-						)}
+						<button
+							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.first}
+							disabled={currentPage === 1}>
+							<ChevronDoubleLeftIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === 1 ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.prev}
+							disabled={currentPage === 1}>
+							<ChevronLeftIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.next}
+							disabled={currentPage === pagination.totalPage}>
+							<ChevronRightIcon className="size-5 text-gray-500" />
+						</button>
+						<button
+							className={`${currentPage === pagination.totalPage ? 'bg-grayCS' : 'cursor-pointer'} p-1 hover:bg-graycs  rounded-md border-2 border-grayCS`}
+							onClick={paginationControl.last}
+							disabled={currentPage === pagination.totalPage}>
+							<ChevronDoubleRightIcon className="size-5 text-gray-500" />
+						</button>
+
 						<div className="flex items-center gap-5 justify-between w-full text-gray-500">
 							<span>
 								Pagina atual {cards.length ? currentPage : '0'} de{' '}
