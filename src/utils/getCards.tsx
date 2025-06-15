@@ -1,3 +1,4 @@
+import { AxiosError, HttpStatusCode, isAxiosError } from 'axios'
 import { api } from '../services/api'
 export default async function getCards() {
 	const token = localStorage.getItem('token')
@@ -6,13 +7,15 @@ export default async function getCards() {
 		const { data } = await api.get(`/cards/user/${userID}`, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
-		if (!data) {
-			return
-		} else {
-			return data
-		}
-		console.log(data)
+
+		return data
 	} catch (e) {
-		console.log(e)
+		if (e instanceof AxiosError) {
+			if (e.response?.status === 404) {
+				return []
+			}
+		} else {
+			alert('Ocorreu um erro inesperado!')
+		}
 	}
 }

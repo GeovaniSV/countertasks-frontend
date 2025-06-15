@@ -101,7 +101,6 @@ function Home() {
 			taskSubmit()
 		}
 	}
-	console.log(cards)
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
@@ -151,11 +150,26 @@ function Home() {
 	const fetchCards = async () => {
 		try {
 			const data = await getCards()
-			setCards(data)
+			if (data == 404) {
+				setCards([
+					{
+						title: 'Aa',
+						subtitle: 'aaa',
+						id: 1,
+						content: 'aaaaaaaaaaa',
+						done: false,
+						authorId: 11,
+						tasks: [],
+					},
+				])
+			} else {
+				setCards(data)
+			}
 		} catch (e) {
 			console.log('Falha ao buscar cards' + e)
 		}
 	}
+	console.log(cards)
 	useEffect(() => {
 		setTimeout(() => {
 			fetchCards()
