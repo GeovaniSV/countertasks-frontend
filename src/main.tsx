@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
+import PrivateRoutes from './utils/PrivateRoutes.tsx'
 import './index.css'
 import Home from './pages/Home/index.tsx'
 import History from './pages/History/index.tsx'
@@ -13,12 +14,17 @@ import Layout from './Layout.tsx'
 
 const router = createBrowserRouter([
 	{
-		element: <Layout />,
+		element: <PrivateRoutes />,
 		children: [
-			{ path: '/home', element: <Home /> },
-			{ path: '/history', element: <History /> },
-			{ path: '/profile', element: <Profile /> },
-			{ path: '/card/:id', element: <TaskTable /> },
+			{
+				element: <Layout />,
+				children: [
+					{ path: '/home', element: <Home /> },
+					{ path: '/history', element: <History /> },
+					{ path: '/profile', element: <Profile /> },
+					{ path: '/card/:id', element: <TaskTable /> },
+				],
+			},
 		],
 	},
 	{ path: '/', element: <Navigate to="/login" /> },

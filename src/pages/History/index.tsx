@@ -7,6 +7,7 @@ import InputField from '../../components/ui/InputField'
 
 //Api
 import { api } from '../../services/api'
+import getCards from '../../utils/getCards'
 
 //icons
 import {
@@ -141,26 +142,19 @@ function History() {
 		},
 	}
 
-	const getCards = async () => {
-		const token = localStorage.getItem('token')
+	const fetchCards = async () => {
 		try {
-			const { data } = await api.get('/cards', {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			if (!data) {
-				return
-			} else {
-				setCards(data)
-			}
+			const data = await getCards()
+			setCards(data)
 		} catch (e) {
-			console.log(e)
+			console.log('Falha ao buscar cards' + e)
 		}
 	}
-
 	useEffect(() => {
-		getCards()
-	}, [openCreateModal, Modal, renderUseEffect])
-
+		setTimeout(() => {
+			fetchCards()
+		}, 100)
+	}, [openCreateModal])
 	return (
 		<main className="w-full py-4 px-8 max-sm:px-2 max-lg:mt-20 max-md:mt-16">
 			<Modal

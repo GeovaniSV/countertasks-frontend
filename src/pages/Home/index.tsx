@@ -7,6 +7,8 @@ import InputField from '../../components/ui/InputField'
 //Api
 import { api } from '../../services/api'
 
+import getCards from '../../utils/getCards'
+
 //icons
 import {
 	PlusIcon,
@@ -99,6 +101,7 @@ function Home() {
 			taskSubmit()
 		}
 	}
+	console.log(cards)
 
 	//pagination
 	const [currentPage, setCurrentPage] = useState(1)
@@ -145,26 +148,17 @@ function Home() {
 			setCurrentPage(1)
 		},
 	}
-
-	async function getCards() {
-		const token = localStorage.getItem('token')
+	const fetchCards = async () => {
 		try {
-			const { data } = await api.get('/cards', {
-				headers: { Authorization: `Bearer ${token}` },
-			})
-			if (!data) {
-				return
-			} else {
-				setCards(data)
-			}
+			const data = await getCards()
+			setCards(data)
 		} catch (e) {
-			console.log(e)
+			console.log('Falha ao buscar cards' + e)
 		}
 	}
-
 	useEffect(() => {
 		setTimeout(() => {
-			getCards()
+			fetchCards()
 		}, 100)
 	}, [openCreateModal])
 
